@@ -1,22 +1,18 @@
 import React from 'react'
 import './App.css'
 
-import wasm from "spg-painter-core";
+import wasm from 'spg-painter-core'
 
 async function loadWasm() {
-    const { greet } = await wasm();
-    greet()
+  const ex = await wasm()
+  console.log(ex)
 }
 loadWasm()
 
-
-function App() {
+export default function App(): JSX.Element {
   return (
     <div className="App">
-      <header className="App-header">
-      </header>
+      <header className="App-header"></header>
     </div>
   )
 }
-
-export default App
