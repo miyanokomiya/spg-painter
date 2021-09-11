@@ -4,6 +4,11 @@ module.exports = {
     node: true,
     es2021: true,
   },
+  extends: [
+    'eslint:recommended',
+    'plugin:@typescript-eslint/eslint-recommended',
+    'plugin:@typescript-eslint/recommended',
+  ],
   parserOptions: {
     ecmaVersion: 12,
     sourceType: 'module',
@@ -14,20 +19,12 @@ module.exports = {
     {
       files: ['**/*.ts'],
       extends: [
-        'eslint:recommended',
-        'plugin:@typescript-eslint/eslint-recommended',
-        'plugin:@typescript-eslint/recommended',
         'plugin:prettier/recommended',
       ],
     },
     {
       files: ['**/*.svelte'],
       processor: 'svelte3/svelte3',
-      extends: [
-        'eslint:recommended',
-        'plugin:@typescript-eslint/eslint-recommended',
-        'plugin:@typescript-eslint/recommended',
-      ],
     },
   ],
   settings: {
