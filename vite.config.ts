@@ -1,5 +1,6 @@
 import { defineConfig } from 'vite'
-import reactRefresh from '@vitejs/plugin-react-refresh'
+import preprocess from 'svelte-preprocess'
+import { svelte } from '@sveltejs/vite-plugin-svelte'
 import rust from '@wasm-tool/rollup-plugin-rust'
 import path from 'path'
 
@@ -13,8 +14,16 @@ export default defineConfig({
       },
     },
   },
-  plugins: [reactRefresh(), rust()],
-  alias: {
-    'spg-painter-core': corePath,
+  plugins: [
+    svelte({
+      emitCss: false,
+      preprocess: preprocess(),
+    }),
+    rust(),
+  ],
+  resolve: {
+    alias: {
+      'spg-painter-core': corePath,
+    },
   },
 })

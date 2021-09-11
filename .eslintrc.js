@@ -4,31 +4,37 @@ module.exports = {
     node: true,
     es2021: true,
   },
-  extends: [
-    'eslint:recommended',
-    'plugin:@typescript-eslint/eslint-recommended',
-    'plugin:@typescript-eslint/recommended',
-    'plugin:react/recommended',
-    'plugin:react-hooks/recommended',
-    'plugin:prettier/recommended',
-  ],
   parserOptions: {
     ecmaVersion: 12,
     sourceType: 'module',
     warnOnUnsupportedTypeScriptVersion: false,
-    ecmaFeatures: {
-      jsx: true,
-    },
   },
+  plugins: ['svelte3', '@typescript-eslint'],
+  overrides: [
+    {
+      files: ['**/*.ts'],
+      extends: [
+        'eslint:recommended',
+        'plugin:@typescript-eslint/eslint-recommended',
+        'plugin:@typescript-eslint/recommended',
+        'plugin:prettier/recommended',
+      ],
+    },
+    {
+      files: ['**/*.svelte'],
+      processor: 'svelte3/svelte3',
+      extends: [
+        'eslint:recommended',
+        'plugin:@typescript-eslint/eslint-recommended',
+        'plugin:@typescript-eslint/recommended',
+      ],
+    },
+  ],
   settings: {
-    react: {
-      version: 'detect',
-    },
+    'svelte3/typescript': require('typescript'),
   },
-  plugins: ['react-hooks', 'react', '@typescript-eslint'],
   rules: {
     'no-unused-vars': 'off',
     '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
-    'react/prop-types': 'off',
   },
 }
