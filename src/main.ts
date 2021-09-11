@@ -1,3 +1,4 @@
+import 'ress'
 import App from './App.svelte'
 
 new App({
