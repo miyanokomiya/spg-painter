@@ -1,5 +1,5 @@
 import type { IVec2 } from 'okageo'
-import type { ElementBase } from './core'
+import type { ElementBase } from '../entities'
 import { getElementModule, registModule } from './core'
 
 import rectModule from './rect'

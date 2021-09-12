@@ -8,10 +8,12 @@
   import CanvasElementLayer from './components/canvases/CanvasElementLayer.svelte'
 
   import { viewSize, viewBox } from './stores/canvas'
-  import { currentLayer, currentLayerElements } from './stores/layers'
+  import { lastSelectedLayerElements, init } from './stores/layers'
 
   let canvasWrapperEl: HTMLElement
   let canvasEl: HTMLCanvasElement
+
+  init()
 
   $: {
     const rect = canvasWrapperEl?.getBoundingClientRect()
@@ -31,7 +33,6 @@
 </script>
 
 <div class="app">
-  {$currentLayer?.elements}
   <GridPanelH expanded rateList={[3, 7]}>
     <div slot="0"><ToolPanel /></div>
     <div slot="1" bind:this={canvasWrapperEl} class="canvas-wrapper">
@@ -47,7 +48,7 @@
             width={$viewSize.width}
             height={$viewSize.height}
           >
-            <CanvasElementLayer elements={$currentLayerElements} />
+            <CanvasElementLayer elements={$lastSelectedLayerElements} />
           </CanvasOverlay>
         </CanvasHandler>
       </div>
