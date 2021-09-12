@@ -1,9 +1,16 @@
 <script lang="ts">
+  import { addElement } from '../../stores/layers'
+
   import ToolButton from '../atoms/ToolButton.svelte'
+
+  function onClickRect() {
+    console.log('add rect')
+    addElement('rect', {}, () => `rect_${Math.random()}`)
+  }
 </script>
 
 <div class="wrapper">
-  <ToolButton>Rect</ToolButton>
+  <ToolButton on:click={onClickRect}>Rect</ToolButton>
   <ToolButton>Circle</ToolButton>
   <ToolButton>Line</ToolButton>
   <ToolButton>Line</ToolButton>
