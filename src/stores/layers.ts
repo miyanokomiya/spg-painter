@@ -1,11 +1,6 @@
 import { writable, derived, get } from 'svelte/store'
 import { createElement } from '../models/elements/index'
-import type { ElementBase } from '../models/elements/core'
-
-interface Layer {
-  id: string
-  elements: ElementBase[]
-}
+import type { StoreEntities, ElementBase } from '../models/entities'
 
 function getLayer() {
   return {
@@ -14,13 +9,28 @@ function getLayer() {
   }
 }
 
-export const layers = writable<Layer[]>([{ ...getLayer(), id: 'root' }])
+const layers = writable<StoreEntities['layers']>({
+  byId: {
+    root: { ...getLayer(), id: 'root' },
+  },
+  allIds: ['root'],
+})
+const elements = writable<StoreEntities['elements']>({
+  byId: {},
+  allIds: [],
+})
 
 const currentLayerId = writable('root')
 export const currentLayer = derived(
   [layers, currentLayerId],
   ([$layers, $currentLayerId]) => {
-    return $layers.find((l) => l.id === $currentLayerId)
+    return $layers.byId[$currentLayerId]
+  }
+)
+export const currentLayerElements = derived(
+  [elements, currentLayer],
+  ([$elements, $currentLayer]) => {
+    return $currentLayer.elements.map((id) => $elements.byId[id])
   }
 )
 
@@ -32,13 +42,11 @@ export const lastSelectedElementId = derived(
   }
 )
 export const selectedElement = derived(
-  [currentLayer, selectedElementIds],
-  ([$currentLayer, $selectedElementIds]) => {
-    return (
-      $currentLayer?.elements.filter((elm) =>
-        $selectedElementIds.has(elm.id)
-      ) ?? []
-    )
+  [elements, selectedElementIds],
+  ([$elements, $selectedElementIds]) => {
+    return Array.from($selectedElementIds.keys())
+      .map((id) => $elements.byId[id])
+      .filter((elm) => !!elm)
   }
 )
 
@@ -57,15 +65,32 @@ export function addElement(
   if (!layer) return
 
   const elm = createElement(name, arg, getId)
+
   layers.update((old) => {
-    const next = [...old]
-    const index = next.findIndex((l) => l.id === get(currentLayerId))
-    next[index] = {
-      ...next[index],
-      elements: [...next[index].elements, elm],
+    const targetLayer = get(currentLayer)
+    return {
+      ...old,
+      byId: {
+        ...old.byId,
+        [targetLayer.id]: {
+          ...targetLayer,
+          elements: [...targetLayer.elements, elm.id],
+        },
+      },
     }
-    return next
   })
+
+  elements.update((old) => {
+    return {
+      ...old,
+      byId: {
+        ...old.byId,
+        [elm.id]: elm,
+      },
+      allIds: [...old.allIds, elm.id],
+    }
+  })
+
   selectElement(elm.id)
 
   return elm.id

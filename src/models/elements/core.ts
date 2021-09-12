@@ -1,11 +1,5 @@
 import type { IVec2 } from 'okageo'
-
-export interface ElementBase {
-  id: string
-  name: string
-  fill: string
-  stroke: string
-}
+import type { ElementBase } from '../entities'
 
 export interface ElementModule<T extends ElementBase> {
   name: string

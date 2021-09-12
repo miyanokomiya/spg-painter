@@ -1,5 +1,6 @@
 import type { IVec2 } from 'okageo'
-import type { ElementModule, ElementBase } from './core'
+import type { ElementBase } from '../entities'
+import type { ElementModule } from './core'
 import { createElementBase } from './core'
 
 const name = 'rect'

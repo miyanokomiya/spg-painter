@@ -5,11 +5,10 @@
   import ToolPanel from './components/panels/ToolPanel.svelte'
   import CanvasHandler from './components/canvases/CanvasHandler.svelte'
   import CanvasOverlay from './components/canvases/CanvasOverlay.svelte'
-  import ElementAnchor from './components/canvases/ElementAnchor.svelte'
   import CanvasElementLayer from './components/canvases/CanvasElementLayer.svelte'
 
   import { viewSize, viewBox } from './stores/canvas'
-  import { currentLayer } from './stores/layers'
+  import { currentLayer, currentLayerElements } from './stores/layers'
 
   let canvasWrapperEl: HTMLElement
   let canvasEl: HTMLCanvasElement
@@ -48,7 +47,7 @@
             width={$viewSize.width}
             height={$viewSize.height}
           >
-            <CanvasElementLayer elements={$currentLayer?.elements} />
+            <CanvasElementLayer elements={$currentLayerElements} />
           </CanvasOverlay>
         </CanvasHandler>
       </div>
