@@ -1,47 +1,62 @@
-import { writable, derived } from 'svelte/store'
+import { writable, derived, get } from 'svelte/store'
 import type { Readable } from 'svelte/store'
+import * as okaselect from 'okaselect'
 import type { StoreEntityBase } from '../models/entities'
 
 export function useSelectable<T>(entities: Readable<StoreEntityBase<T>>): {
-  selectedIds: Readable<Map<string, true>>
+  selectedIds: Readable<{ [id: string]: true }>
   selectedList: Readable<T[]>
-  lastSelectedId: Readable<string>
+  lastSelectedId: Readable<string | undefined>
   lastSelected: Readable<T | undefined>
   select: (id: string, shift?: boolean) => void
+  selectAll: () => void
+  clearAll: () => void
 } {
-  const selectedIds = writable(new Map<string, true>())
-  const lastSelectedId = derived([selectedIds], ([$selectedElementIds]) => {
-    const keys = Array.from($selectedElementIds.keys())
-    return keys[keys.length - 1]
-  })
-  const selectedList = derived(
-    [entities, selectedIds],
-    ([$entities, $selectedIds]) => {
-      return Array.from($selectedIds.keys())
-        .map((id) => $entities.byId[id])
-        .filter((elm) => !!elm)
-    }
-  )
-  const lastSelected = derived(
-    [entities, lastSelectedId],
-    ([$entities, $lastSelectedId]) => {
-      return $entities.byId[$lastSelectedId]
-    }
+  const selectable = writable(
+    okaselect.useSelectable<T>(() => get(entities).byId)
   )
 
-  function select(id: string, shift = false): void {
-    if (!shift) {
-      selectedIds.set(new Map([[id, true]]))
-    } else {
-      selectedIds.update((val) => {
-        if (val.has(id)) {
-          val.delete(id)
-        } else {
-          val.set(id, true)
-        }
-        return val
-      })
-    }
+  const lastSelectedId = derived([selectable], ([$selectable]) => {
+    return $selectable.getLastSelectedId() as string
+  })
+
+  const selectedIds = derived([selectable], ([$selectable]) => {
+    return $selectable
+      .getSelectedIds()
+      .reduce<{ [id: string]: true }>((ids, id) => {
+        ids[id] = true
+        return ids
+      }, {})
+  })
+
+  const selectedList = derived([selectable], ([$selectable]) => {
+    return $selectable.getSelectedItems()
+  })
+
+  const lastSelected = derived([selectable], ([$selectable]) => {
+    const id = $selectable.getLastSelectedId()
+    return id ? get(entities).byId[id] : undefined
+  })
+
+  function select(id: string, ctrl = false): void {
+    selectable.update((val) => {
+      val.select(id, ctrl)
+      return val
+    })
+  }
+
+  function selectAll(): void {
+    selectable.update((val) => {
+      val.selectAll()
+      return val
+    })
+  }
+
+  function clearAll(): void {
+    selectable.update((val) => {
+      val.clearAll()
+      return val
+    })
   }
 
   return {
@@ -49,6 +64,9 @@ export function useSelectable<T>(entities: Readable<StoreEntityBase<T>>): {
     selectedList,
     lastSelectedId,
     lastSelected,
+
     select,
+    selectAll,
+    clearAll,
   }
 }
