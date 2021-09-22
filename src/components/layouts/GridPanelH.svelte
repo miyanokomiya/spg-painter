@@ -24,7 +24,7 @@
   {/if}
 </div>
 
-<style lang="scss">
+<style>
   .wrapper {
     border: 1px solid #000;
     display: flex;

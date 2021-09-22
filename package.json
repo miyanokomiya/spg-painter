@@ -35,7 +35,6 @@
     "jest": "^27.1.1",
     "prettier": "^2.4.0",
     "prettier-plugin-svelte": "^2.4.0",
-    "sass": "^1.39.2",
     "svelte-preprocess": "^4.9.4",
     "ts-jest": "^27.0.5",
     "tslib": "^2.3.1",

@@ -2,7 +2,7 @@
   <slot />
 </button>
 
-<style lang="scss">
+<style>
   button {
     width: 60px;
     height: 60px;
@@ -12,8 +12,8 @@
     border: 1px solid #ddd;
     border-radius: 8px;
     background-color: #eee;
-    &:hover {
-      opacity: 0.7;
-    }
+  }
+  button:hover {
+    opacity: 0.7;
   }
 </style>

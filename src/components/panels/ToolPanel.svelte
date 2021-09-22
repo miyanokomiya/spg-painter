@@ -21,7 +21,7 @@
   <ToolButton>Line</ToolButton>
 </div>
 
-<style lang="scss">
+<style>
   .wrapper {
     display: flex;
     flex-wrap: wrap;
