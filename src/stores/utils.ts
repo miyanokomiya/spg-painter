@@ -34,10 +34,13 @@ export function useSelectable<T>(entities: Readable<StoreEntityBase<T>>): {
     return $selectable.getSelectedItems()
   })
 
-  const lastSelected = derived([selectable], ([$selectable]) => {
-    const id = $selectable.getLastSelectedId()
-    return id ? get(entities).byId[id] : undefined
-  })
+  const lastSelected = derived(
+    [selectable, entities],
+    ([$selectable, $entities]) => {
+      const id = $selectable.getLastSelectedId()
+      return id ? $entities.byId[id] : undefined
+    }
+  )
 
   function select(id: string, ctrl = false): void {
     selectable.update((val) => {

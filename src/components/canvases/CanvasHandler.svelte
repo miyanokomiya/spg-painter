@@ -1,61 +1,52 @@
-<script>
-  import { useDrag, getPointInTarget } from 'okanvas'
-  import { downAt, moveBy } from '../../stores/canvas'
+<script lang="ts">
   import { sub } from 'okageo'
+  import { useDrag, getPointInTarget } from 'okanvas'
+  import {
+    downAt,
+    moveBy,
+    onDown,
+    onMove,
+    onDrag,
+    onUp,
+    onWheel,
+  } from '../../stores/canvas'
 
   const drag = useDrag((arg) => {
-    moveBy.update(() => sub(arg.p, arg.base))
+    onDrag(arg.p, arg.d)
   })
 
-  function onDown(e) {
-    downAt.update(() => getPointInTarget(e))
+  function onPointerDown(e: PointerEvent) {
     drag.onDown(e)
+    onDown(getPointInTarget(e))
   }
-  function onMove(e) {
+  function onPointerMove(e: PointerEvent) {
     drag.onMove(e)
+    onMove(getPointInTarget(e))
   }
-  function onUp() {
-    moveBy.update(() => ({ x: 0, y: 0 }))
+  function onPointerUp() {
     drag.onUp()
+    onUp()
+  }
+  function onPointerWheel(e: WheelEvent) {
+    onWheel(getPointInTarget(e), {
+      x: e.deltaX,
+      y: e.deltaY,
+    })
   }
 </script>
 
 <div
   class="wrapper"
-  on:pointerdown={onDown}
-  on:pointermove={onMove}
-  on:pointerup={onUp}
+  on:pointerdown={onPointerDown}
+  on:pointermove={onPointerMove}
+  on:pointerup={onPointerUp}
+  on:wheel={onPointerWheel}
 >
   <slot />
-  <div
-    class="pointer from"
-    style="transform: translate({$downAt.x}px, {$downAt.y}px)"
-  />
-  <div
-    class="pointer to"
-    style="transform: translate({$downAt.x + $moveBy.x}px, {$downAt.y +
-      $moveBy.y}px)"
-  />
 </div>
 
-<style lang="scss">
+<style>
   .wrapper {
     position: relative;
-  }
-  .pointer {
-    position: absolute;
-    top: -5px;
-    left: -5px;
-    width: 10px;
-    height: 10px;
-    border-radius: 100%;
-    pointer-events: none;
-
-    &.from {
-      background-color: red;
-    }
-    &.to {
-      background-color: blue;
-    }
   }
 </style>

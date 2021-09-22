@@ -1,6 +1,4 @@
 <script lang="ts">
-  import { onMount } from 'svelte'
-
   import GridPanelH from './components/layouts/GridPanelH.svelte'
   import ToolPanel from './components/panels/ToolPanel.svelte'
   import HistoryPanel from './components/panels/HistoryPanel.svelte'
@@ -23,15 +21,6 @@
       viewSize.set({ width: rect.width, height: rect.height })
     }
   }
-
-  onMount(() => {
-    setTimeout(() => {
-      const ctx = canvasEl.getContext('2d')!
-      ctx.rect(10, 20, 100, 200)
-      ctx.fillStyle = 'green'
-      ctx.fill()
-    })
-  })
 
   function handleKeydown(e: KeyboardEvent) {
     if (!e.ctrlKey) return
