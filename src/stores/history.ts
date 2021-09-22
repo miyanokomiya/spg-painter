@@ -2,7 +2,7 @@ import type { Action } from 'okahistory'
 import { useHistory } from 'okahistory'
 import { derived, writable } from 'svelte/store'
 
-const history = useHistory()
+const history = useHistory({ max: 64 })
 const historyStore = writable(history)
 
 export const summaries = derived([historyStore], ([history]) =>
