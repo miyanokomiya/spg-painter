@@ -3,7 +3,7 @@ import { createElement } from '../models/elements/index'
 import type { StoreEntities, ElementBase } from '../models/entities'
 import { createLayer, createId } from '../models/entities'
 import { useSelectable } from './utils'
-import { history } from './history'
+import { defineReducer, dispatch } from './history'
 import { addEntity, removeEntity, updateEntity } from '../utils/entities'
 
 const layers = writable<StoreEntities['layers']>({
@@ -45,7 +45,7 @@ const ACTION_NAMES = {
   SELECT_ELEMENT: 'SELECT_ELEMENT',
 }
 
-history.defineReducer(ACTION_NAMES.ADD_LAYER, {
+defineReducer(ACTION_NAMES.ADD_LAYER, {
   undo: (args) => {
     layers.update((old) => {
       return removeEntity(old, args.id)
@@ -67,7 +67,7 @@ history.defineReducer(ACTION_NAMES.ADD_LAYER, {
   getLabel: () => 'Add Layer',
 })
 
-history.defineReducer(ACTION_NAMES.ADD_ELEMENT, {
+defineReducer(ACTION_NAMES.ADD_ELEMENT, {
   undo: (args) => {
     if (!args) return
 
@@ -105,7 +105,7 @@ history.defineReducer(ACTION_NAMES.ADD_ELEMENT, {
   getLabel: () => 'Add Element',
 })
 
-history.defineReducer(ACTION_NAMES.SELECT_ELEMENT, {
+defineReducer(ACTION_NAMES.SELECT_ELEMENT, {
   undo: (snapshot) => {
     elementSelectable.multiSelect(Object.keys(snapshot))
   },
@@ -118,14 +118,14 @@ history.defineReducer(ACTION_NAMES.SELECT_ELEMENT, {
 })
 
 export function addLayer(): void {
-  history.dispatch({
+  dispatch({
     name: ACTION_NAMES.ADD_LAYER,
     args: { id: createId() },
   })
 }
 
 export function selectElement(id: string, options?: { shift?: boolean }): void {
-  history.dispatch({
+  dispatch({
     name: ACTION_NAMES.SELECT_ELEMENT,
     args: { id, options },
   })
@@ -140,7 +140,7 @@ export function addElement(
   if (!layer) return
 
   const elm = createElement(name, arg, getId)
-  history.dispatch({
+  dispatch({
     name: ACTION_NAMES.ADD_ELEMENT,
     args: { element: elm },
   })

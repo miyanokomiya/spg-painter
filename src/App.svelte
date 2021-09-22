@@ -3,13 +3,14 @@
 
   import GridPanelH from './components/layouts/GridPanelH.svelte'
   import ToolPanel from './components/panels/ToolPanel.svelte'
+  import HistoryPanel from './components/panels/HistoryPanel.svelte'
   import CanvasHandler from './components/canvases/CanvasHandler.svelte'
   import CanvasOverlay from './components/canvases/CanvasOverlay.svelte'
   import CanvasElementLayer from './components/canvases/CanvasElementLayer.svelte'
 
   import { viewSize, viewBox } from './stores/canvas'
   import { lastSelectedLayerElements, init } from './stores/layers'
-  import { history } from './stores/history'
+  import { undo, redo } from './stores/history'
 
   let canvasWrapperEl: HTMLElement
   let canvasEl: HTMLCanvasElement
@@ -37,9 +38,11 @@
 
     switch (e.key) {
       case 'z':
-        history.undo()
+        undo()
+        return
       case 'Z':
-        history.redo()
+        redo()
+        return
     }
   }
 </script>
@@ -66,6 +69,9 @@
           </CanvasOverlay>
         </CanvasHandler>
       </div>
+      <div class="history-panel">
+        <HistoryPanel />
+      </div>
     </div>
   </GridPanelH>
 </div>
@@ -85,5 +91,13 @@
     left: 0;
     bottom: 0;
     right: 0;
+  }
+  .history-panel {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    max-height: 100%;
+    overflow: auto;
+    opacity: 0.6;
   }
 </style>

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { ElementBase } from '../../models/elements/core'
+  import type { ElementBase } from '../../models/entities'
   import { getElementAnchor } from '../../models/elements'
   import ElementAnchor from './ElementAnchor.svelte'
 
