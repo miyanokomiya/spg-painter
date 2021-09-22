@@ -1,14 +1,10 @@
 import { writable, derived, get } from 'svelte/store'
 import { createElement } from '../models/elements/index'
 import type { StoreEntities, ElementBase } from '../models/entities'
+import { createLayer, createId } from '../models/entities'
 import { useSelectable } from './utils'
-
-function createLayer() {
-  return {
-    id: Math.random().toString(),
-    elements: [],
-  }
-}
+import { history } from './history'
+import { addEntity, removeEntity, updateEntity } from '../utils/entities'
 
 const layers = writable<StoreEntities['layers']>({
   byId: {},
@@ -22,7 +18,7 @@ const elements = writable<StoreEntities['elements']>({
 export function init(): void {
   layers.set({
     byId: {
-      root: { ...createLayer(), id: 'root' },
+      root: { ...createLayer({ id: 'root' }) },
     },
     allIds: ['root'],
   })
@@ -43,22 +39,96 @@ const elementSelectable = useSelectable(elements)
 export const lastSelectedElementId = elementSelectable.lastSelectedId
 export const selectedElement = elementSelectable.lastSelected
 
-export function selectElement(id: string): void {
-  elementSelectable.select(id)
+const ACTION_NAMES = {
+  ADD_LAYER: 'ADD_LAYER',
+  ADD_ELEMENT: 'ADD_ELEMENT',
+  SELECT_ELEMENT: 'SELECT_ELEMENT',
 }
 
-export function addLayer(): void {
-  const created = createLayer()
-  layers.update((old) => {
+history.defineReducer(ACTION_NAMES.ADD_LAYER, {
+  undo: (args) => {
+    layers.update((old) => {
+      return removeEntity(old, args.id)
+    })
+    layerSelectable.multiSelect(args.selectedIds)
+  },
+  redo: (args: { id: string }) => {
+    const selectedIds = get(layerSelectable.selectedList).map((elm) => elm.id)
+    const created = createLayer({ id: args.id })
+    layers.update((old) => {
+      return addEntity(old, created.id, created)
+    })
+    layerSelectable.select(args.id)
     return {
-      byId: {
-        ...old.byId,
-        [created.id]: created,
-      },
-      allIds: [...old.allIds, created.id],
+      id: args.id,
+      selectedIds,
     }
+  },
+  getLabel: () => 'Add Layer',
+})
+
+history.defineReducer(ACTION_NAMES.ADD_ELEMENT, {
+  undo: (args) => {
+    if (!args) return
+
+    layers.update((old) => {
+      const target = old.byId[args.layerId]
+      return updateEntity(old, args.layerId, {
+        ...target,
+        elements: target.elements.filter((id) => id !== args.elementId),
+      })
+    })
+    elements.update((old) => {
+      return removeEntity(old, args.elementId)
+    })
+    elementSelectable.multiSelect(args.selectedIds)
+  },
+  redo: (args: { element: ElementBase }) => {
+    const elm = args.element
+    const targetLayer = get(lastSelectedLayer)
+    if (!targetLayer) return
+
+    const selectedIds = get(elementSelectable.selectedList).map((elm) => elm.id)
+    layers.update((old) => {
+      return updateEntity(old, targetLayer.id, {
+        ...targetLayer,
+        elements: [...targetLayer.elements, elm.id],
+      })
+    })
+    elements.update((old) => {
+      return addEntity(old, elm.id, elm)
+    })
+    elementSelectable.select(elm.id)
+
+    return { layerId: targetLayer.id, elementId: elm.id, selectedIds }
+  },
+  getLabel: () => 'Add Element',
+})
+
+history.defineReducer(ACTION_NAMES.SELECT_ELEMENT, {
+  undo: (snapshot) => {
+    elementSelectable.multiSelect(Object.keys(snapshot))
+  },
+  redo: (args: { id: string; options?: { shift?: boolean } }) => {
+    const snapshot = get(elementSelectable.selectedIds)
+    elementSelectable.select(args.id, args.options?.shift)
+    return snapshot
+  },
+  getLabel: () => 'Select Element',
+})
+
+export function addLayer(): void {
+  history.dispatch({
+    name: ACTION_NAMES.ADD_LAYER,
+    args: { id: createId() },
   })
-  layerSelectable.select(created.id)
+}
+
+export function selectElement(id: string, options?: { shift?: boolean }): void {
+  history.dispatch({
+    name: ACTION_NAMES.SELECT_ELEMENT,
+    args: { id, options },
+  })
 }
 
 export function addElement(
@@ -70,32 +140,10 @@ export function addElement(
   if (!layer) return
 
   const elm = createElement(name, arg, getId)
-
-  layers.update((old) => {
-    const targetLayer = get(lastSelectedLayer)
-    return {
-      byId: {
-        ...old.byId,
-        [targetLayer.id]: {
-          ...targetLayer,
-          elements: [...targetLayer.elements, elm.id],
-        },
-      },
-      allIds: old.allIds,
-    }
+  history.dispatch({
+    name: ACTION_NAMES.ADD_ELEMENT,
+    args: { element: elm },
   })
-
-  elements.update((old) => {
-    return {
-      byId: {
-        ...old.byId,
-        [elm.id]: elm,
-      },
-      allIds: [...old.allIds, elm.id],
-    }
-  })
-
-  selectElement(elm.id)
 
   return elm.id
 }

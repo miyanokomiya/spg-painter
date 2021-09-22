@@ -9,6 +9,7 @@ export function useSelectable<T>(entities: Readable<StoreEntityBase<T>>): {
   lastSelectedId: Readable<string | undefined>
   lastSelected: Readable<T | undefined>
   select: (id: string, shift?: boolean) => void
+  multiSelect: (ids: string[], shift?: boolean) => void
   selectAll: () => void
   clearAll: () => void
 } {
@@ -45,6 +46,13 @@ export function useSelectable<T>(entities: Readable<StoreEntityBase<T>>): {
     })
   }
 
+  function multiSelect(ids: string[], ctrl = false): void {
+    selectable.update((val) => {
+      val.multiSelect(ids, ctrl)
+      return val
+    })
+  }
+
   function selectAll(): void {
     selectable.update((val) => {
       val.selectAll()
@@ -66,6 +74,7 @@ export function useSelectable<T>(entities: Readable<StoreEntityBase<T>>): {
     lastSelected,
 
     select,
+    multiSelect,
     selectAll,
     clearAll,
   }

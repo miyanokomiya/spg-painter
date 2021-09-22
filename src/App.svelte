@@ -9,6 +9,7 @@
 
   import { viewSize, viewBox } from './stores/canvas'
   import { lastSelectedLayerElements, init } from './stores/layers'
+  import { history } from './stores/history'
 
   let canvasWrapperEl: HTMLElement
   let canvasEl: HTMLCanvasElement
@@ -30,7 +31,20 @@
       ctx.fill()
     })
   })
+
+  function handleKeydown(e: KeyboardEvent) {
+    if (!e.ctrlKey) return
+
+    switch (e.key) {
+      case 'z':
+        history.undo()
+      case 'Z':
+        history.redo()
+    }
+  }
 </script>
+
+<svelte:window on:keydown={handleKeydown} />
 
 <div class="app">
   <GridPanelH expanded rateList={[3, 7]}>

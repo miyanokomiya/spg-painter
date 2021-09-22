@@ -19,3 +19,16 @@ export interface ElementBase {
   fill: string
   stroke: string
 }
+
+export function createId(): string {
+  return `${Math.random()}`
+}
+
+export function createLayer(arg?: Partial<Layer>, getId?: () => string): Layer {
+  const id = getId?.() ?? arg?.id ?? ''
+  return {
+    elements: [],
+    ...arg,
+    id,
+  }
+}
