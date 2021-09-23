@@ -85,11 +85,8 @@ export function useSelectable<T>(entities: Readable<StoreEntityBase<T>>): {
   }
 }
 
-export function useCanvas(options: {
-  zoomRate?: number
-  zoomMax?: number
-  zoomMin?: number
-}): {
+export interface CanvasModule {
+  ZOOM_RATE: number
   viewSize: Writable<{ width: number; height: number }>
   scale: Writable<number>
   origin: Writable<IVec2>
@@ -99,7 +96,13 @@ export function useCanvas(options: {
   toCanvasPosition: (v: IVec2) => IVec2
   toCanvasVector: (v: IVec2) => IVec2
   zoom: (base: IVec2, rate: number) => void
-} {
+}
+
+export function useCanvas(options: {
+  zoomRate?: number
+  zoomMax?: number
+  zoomMin?: number
+}): CanvasModule {
   const ZOOM_RATE = options?.zoomRate ?? 1.1
   const ZOOM_MAX = options?.zoomMax ?? Math.pow(ZOOM_RATE, 20)
   const ZOOM_MIN = options?.zoomMin ?? Math.pow(ZOOM_RATE, -20)
@@ -143,6 +146,7 @@ export function useCanvas(options: {
   }
 
   return {
+    ZOOM_RATE,
     viewSize,
     scale,
     origin,

@@ -4,5 +4,5 @@
 </script>
 
 <g>
-  <circle cx={x} cy={y} r="5" stroke="red" stroke-width="1" fill="none" />
+  <circle cx={x} cy={y} r="5" fill="red" stroke="none" />
 </g>

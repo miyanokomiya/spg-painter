@@ -37,7 +37,7 @@ export const lastSelectedLayerElements = derived(
 
 const elementSelectable = useSelectable(elements)
 export const lastSelectedElementId = elementSelectable.lastSelectedId
-export const selectedElement = elementSelectable.lastSelected
+export const selectedElementIds = elementSelectable.selectedIds
 
 const ACTION_NAMES = {
   ADD_LAYER: 'ADD_LAYER',

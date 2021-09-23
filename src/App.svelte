@@ -2,12 +2,16 @@
   import GridPanelH from './components/layouts/GridPanelH.svelte'
   import ToolPanel from './components/panels/ToolPanel.svelte'
   import HistoryPanel from './components/panels/HistoryPanel.svelte'
-  import CanvasHandler from './components/canvases/CanvasHandler.svelte'
   import CanvasOverlay from './components/canvases/CanvasOverlay.svelte'
   import CanvasElementLayer from './components/canvases/CanvasElementLayer.svelte'
 
   import { viewSize, viewBox } from './stores/canvas'
-  import { lastSelectedLayerElements, init } from './stores/layers'
+  import {
+    lastSelectedLayerElements,
+    init,
+    selectElement,
+    selectedElementIds,
+  } from './stores/layers'
   import { undo, redo } from './stores/history'
 
   let canvasWrapperEl: HTMLElement
@@ -34,6 +38,11 @@
         return
     }
   }
+
+  function onSelectElement(e: CustomEvent<string>) {
+    console.log(e.detail)
+    selectElement(e.detail)
+  }
 </script>
 
 <svelte:window on:keydown={handleKeydown} />
@@ -48,15 +57,17 @@
         height={$viewSize.height}
       />
       <div class="canvas-overlay">
-        <CanvasHandler>
-          <CanvasOverlay
-            viewBox={$viewBox}
-            width={$viewSize.width}
-            height={$viewSize.height}
-          >
-            <CanvasElementLayer elements={$lastSelectedLayerElements} />
-          </CanvasOverlay>
-        </CanvasHandler>
+        <CanvasOverlay
+          viewBox={$viewBox}
+          width={$viewSize.width}
+          height={$viewSize.height}
+        >
+          <CanvasElementLayer
+            elements={$lastSelectedLayerElements}
+            selectedElementIds={$selectedElementIds}
+            on:selectElement={onSelectElement}
+          />
+        </CanvasOverlay>
       </div>
       <div class="history-panel">
         <HistoryPanel />

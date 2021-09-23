@@ -1,8 +1,8 @@
-import { writable } from 'svelte/store'
-import type { Readable } from 'svelte/store'
-import { sub } from 'okageo'
+import { get, writable } from 'svelte/store'
 import type { IVec2 } from 'okageo'
 import { useCanvas } from './utils'
+import { HandMode } from '../modes/HandMode'
+import type { CanvasMode } from '../modes/core'
 
 const ZOOM_RATE = 1.1
 
@@ -12,38 +12,28 @@ const canvas = useCanvas({
   zoomMin: Math.pow(ZOOM_RATE, -20),
 })
 
-export const viewSize: Readable<{ width: number; height: number }> =
-  canvas.viewSize
+export const viewSize = canvas.viewSize
 export const viewBox = canvas.viewBox
 
-export const downAt = writable<IVec2>({ x: 0, y: 0 })
-export const moveBy = writable<IVec2>({ x: 0, y: 0 })
+const mode = writable<CanvasMode>(new HandMode(canvas))
 
-export function onDown(p: IVec2, _options?: { ctrl: boolean }): void {
-  downAt.update(() => canvas.toCanvasPosition(p))
+export function onDown(p: IVec2, options?: { ctrl: boolean }): void {
+  get(mode).onDown(canvas.toCanvasPosition(p), options)
 }
-export function onMove(_p: IVec2, _options?: { ctrl: boolean }): void {
-  // TODO
-}
-export function onDrag(
-  p: IVec2,
-  delta: IVec2,
-  _options?: { ctrl: boolean }
-): void {
-  canvas.origin.update((old) => {
-    return sub(old, canvas.toCanvasVector(delta))
-  })
+export function onMove(p: IVec2, v: IVec2, options?: { ctrl: boolean }): void {
+  get(mode).onMove(
+    canvas.toCanvasPosition(p),
+    canvas.toCanvasVector(v),
+    options
+  )
 }
 export function onUp(): void {
-  moveBy.update(() => ({ x: 0, y: 0 }))
+  get(mode).onUp()
 }
 export function onWheel(
   p: IVec2,
   delta: IVec2,
-  _options?: { ctrl: boolean }
+  options?: { ctrl: boolean }
 ): void {
-  canvas.zoom(
-    canvas.toCanvasPosition(p),
-    delta.y < 0 ? 1 / ZOOM_RATE : ZOOM_RATE
-  )
+  get(mode).onWheel(canvas.toCanvasPosition(p), delta, options)
 }
