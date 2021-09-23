@@ -1,15 +1,6 @@
 <script lang="ts">
-  import { sub } from 'okageo'
   import { useDrag, getPointInTarget } from 'okanvas'
-  import {
-    downAt,
-    moveBy,
-    onDown,
-    onMove,
-    onDrag,
-    onUp,
-    onWheel,
-  } from '../../stores/canvas'
+  import { onDown, onMove, onDrag, onUp, onWheel } from '../../stores/canvas'
 
   const drag = useDrag((arg) => {
     onDrag(arg.p, arg.d)

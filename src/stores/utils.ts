@@ -1,7 +1,9 @@
 import { writable, derived, get } from 'svelte/store'
-import type { Readable } from 'svelte/store'
+import type { Readable, Writable } from 'svelte/store'
 import * as okaselect from 'okaselect'
 import type { StoreEntityBase } from '../models/entities'
+import type { IVec2 } from 'okageo'
+import { add, sub, multi } from 'okageo'
 
 export function useSelectable<T>(entities: Readable<StoreEntityBase<T>>): {
   selectedIds: Readable<{ [id: string]: true }>
@@ -80,5 +82,75 @@ export function useSelectable<T>(entities: Readable<StoreEntityBase<T>>): {
     multiSelect,
     selectAll,
     clearAll,
+  }
+}
+
+export function useCanvas(options: {
+  zoomRate?: number
+  zoomMax?: number
+  zoomMin?: number
+}): {
+  viewSize: Writable<{ width: number; height: number }>
+  scale: Writable<number>
+  origin: Writable<IVec2>
+  viewBox: Readable<string>
+  toViewPosition: (v: IVec2) => IVec2
+  toViewVector: (v: IVec2) => IVec2
+  toCanvasPosition: (v: IVec2) => IVec2
+  toCanvasVector: (v: IVec2) => IVec2
+  zoom: (base: IVec2, rate: number) => void
+} {
+  const ZOOM_RATE = options?.zoomRate ?? 1.1
+  const ZOOM_MAX = options?.zoomMax ?? Math.pow(ZOOM_RATE, 20)
+  const ZOOM_MIN = options?.zoomMin ?? Math.pow(ZOOM_RATE, -20)
+
+  const viewSize = writable<{ width: number; height: number }>({
+    width: 0,
+    height: 0,
+  })
+  const scale = writable(1)
+  const origin = writable<IVec2>({ x: 0, y: 0 })
+
+  const viewBox = derived(
+    [viewSize, scale, origin],
+    ([$viewSize, $scale, $origin]) => {
+      return `${$origin.x} ${$origin.y} ${$viewSize.width * $scale} ${
+        $viewSize.height * $scale
+      }`
+    }
+  )
+
+  function toViewPosition(v: IVec2): IVec2 {
+    return toViewVector(sub(v, get(origin)))
+  }
+  function toViewVector(v: IVec2): IVec2 {
+    return multi(v, 1 / get(scale))
+  }
+  function toCanvasPosition(v: IVec2): IVec2 {
+    return add(toCanvasVector(v), get(origin))
+  }
+  function toCanvasVector(v: IVec2): IVec2 {
+    return multi(v, get(scale))
+  }
+
+  function zoom(base: IVec2, rate: number): void {
+    const afterScale = Math.min(Math.max(get(scale) * rate, ZOOM_MIN), ZOOM_MAX)
+    const beforeBaseView = toViewPosition(base)
+    const afterBaseView = multi(sub(base, get(origin)), 1 / afterScale)
+    const diff = multi(sub(beforeBaseView, afterBaseView), afterScale)
+    scale.set(afterScale)
+    origin.update((old) => sub(old, diff))
+  }
+
+  return {
+    viewSize,
+    scale,
+    origin,
+    viewBox,
+    toViewPosition,
+    toViewVector,
+    toCanvasPosition,
+    toCanvasVector,
+    zoom,
   }
 }
