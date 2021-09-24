@@ -1,4 +1,5 @@
 import type { IVec2 } from 'okageo'
+import { useModuleMap } from '../composables/moduleMap'
 import type { CanvasModule } from '../stores/utils'
 
 export type PointerAnchor = { type: string; id: string }
@@ -19,3 +20,9 @@ export interface CanvasMode {
   onUp(): void
   onWheel(p: IVec2, delta: IVec2, options?: PointerOption): void
 }
+
+export interface CanvasModeConstructor {
+  new (canvas: CanvasModule): CanvasMode
+}
+
+export const canvasModeMap = useModuleMap<CanvasModeConstructor>()

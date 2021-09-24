@@ -1,4 +1,5 @@
 import type { IVec2 } from 'okageo'
+import { useModuleMap } from '../../composables/moduleMap'
 import type { ElementBase } from '../entities'
 
 export interface ElementModule<T extends ElementBase> {
@@ -22,15 +23,4 @@ export function createElementBase(
   }
 }
 
-const elementModules: { [name: string]: ElementModule<ElementBase> } = {}
-
-export function getElementModule(name: string): ElementModule<ElementBase> {
-  if (!(name in elementModules)) {
-    throw new Error(`unknown element name: ${name}`)
-  }
-  return elementModules[name]
-}
-
-export function registModule(mod: ElementModule<ElementBase>): void {
-  elementModules[mod.name] = mod
-}
+export const elementModuleMap = useModuleMap<ElementModule<ElementBase>>()
