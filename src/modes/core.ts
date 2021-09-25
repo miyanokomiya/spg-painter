@@ -1,8 +1,10 @@
 import type { IVec2 } from 'okageo'
 import { useModuleMap } from '../composables/moduleMap'
+import type { ElementBase } from '../models/entities'
 import type { CanvasModule } from '../stores/utils'
+import type { CANVAS_ANCHOR_TYPE_KEY } from '../utils/canvas'
 
-export type PointerAnchor = { type: string; id: string }
+export type PointerAnchor = { type: CANVAS_ANCHOR_TYPE_KEY; id: string }
 
 export type PointerOption = {
   anchor?: PointerAnchor
@@ -12,6 +14,7 @@ export type PointerOption = {
 export interface CanvasMode {
   name: string
   canvas: CanvasModule
+  layerContext: LayerContext
 
   onBegin(): void
   onEnd(): void
@@ -22,7 +25,18 @@ export interface CanvasMode {
 }
 
 export interface CanvasModeConstructor {
-  new (canvas: CanvasModule): CanvasMode
+  new (canvas: CanvasModule, layerContext: LayerContext): CanvasMode
 }
 
 export const canvasModeMap = useModuleMap<CanvasModeConstructor>()
+
+export interface LayerContext {
+  addElement(
+    name: string,
+    arg?: Partial<ElementBase>,
+    getId?: () => string
+  ): void
+  removeElement(id: string): void
+  selectElement(id: string, options?: { ctrl?: boolean }): void
+  clearSelectedElement(): void
+}

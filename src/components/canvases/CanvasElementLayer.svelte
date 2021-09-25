@@ -22,10 +22,11 @@
 <g>
   {#each elementInfos as info}
     <g on:click={() => selectElement(info.id)}>
-      <ElementAnchor x={info.anchor.x} y={info.anchor.y} />
-      {#if selectedElementIds[info.id]}
-        <ElementAnchor x={info.anchor.x} y={info.anchor.y + 10} />
-      {/if}
+      <ElementAnchor
+        x={info.anchor.x}
+        y={info.anchor.y}
+        selected={selectedElementIds[info.id]}
+      />
     </g>
   {/each}
 </g>

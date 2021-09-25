@@ -1,18 +1,26 @@
 import { getNorm, sub } from 'okageo'
 import type { IVec2 } from 'okageo'
 import type { CanvasModule } from '../stores/utils'
-import type { CanvasMode, PointerAnchor, PointerOption } from './core'
+import type {
+  CanvasMode,
+  LayerContext,
+  PointerAnchor,
+  PointerOption,
+} from './core'
+import { CANVAS_ANCHOR_TYPE } from '../utils/canvas'
 
 export class HandMode implements CanvasMode {
   name = 'hand'
   canvas: CanvasModule
+  layerContext: LayerContext
   anchor: PointerAnchor | undefined
   downAt: IVec2 | undefined
   moveAt: IVec2 | undefined
   dragAmount = 0
 
-  constructor(canvas: CanvasModule) {
+  constructor(canvas: CanvasModule, layerContext: LayerContext) {
     this.canvas = canvas
+    this.layerContext = layerContext
   }
 
   onBegin(): void {}
@@ -33,8 +41,8 @@ export class HandMode implements CanvasMode {
   }
 
   onUp(): void {
-    if (!this.isDragged()) {
-      console.log('clear')
+    if (this.anchor?.type === CANVAS_ANCHOR_TYPE.CANVAS && !this.isDragged()) {
+      this.layerContext.clearSelectedElement()
     }
     this.anchor = undefined
     this.downAt = undefined

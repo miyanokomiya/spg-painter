@@ -3,6 +3,7 @@
 
   import { getPointInTarget } from 'okanvas'
   import { onDown, onMove, onUp, onWheel } from '../../stores/canvas'
+  import { CANVAS_ANCHOR_TYPE, getAnchor } from '../../utils/canvas'
 
   export let viewBox = '0 0 100 100'
   export let width = 0
@@ -11,8 +12,9 @@
   let moveAt = { x: 0, y: 0 }
 
   function onPointerDown(e: PointerEvent) {
-    onDown(getPointInTarget(e))
-    console.log((e.target as HTMLElement).dataset.anchorType)
+    onDown(getPointInTarget(e), {
+      anchor: getAnchor(e.target as HTMLElement),
+    })
   }
   function onPointerMove(e: PointerEvent) {
     const p = getPointInTarget(e)
@@ -37,7 +39,7 @@
   {viewBox}
   {width}
   {height}
-  data-anchor-type="canvas"
+  data-anchor-type={CANVAS_ANCHOR_TYPE.CANVAS}
   on:pointerdown={onPointerDown}
   on:pointermove={onPointerMove}
   on:pointerup={onPointerUp}

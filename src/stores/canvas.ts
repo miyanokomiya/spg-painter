@@ -1,8 +1,9 @@
 import { get, writable } from 'svelte/store'
 import type { IVec2 } from 'okageo'
 import { useCanvas } from './utils'
-import type { CanvasMode } from '../modes/core'
+import type { CanvasMode, LayerContext, PointerOption } from '../modes/core'
 import { createCanvasMode } from '../modes'
+import * as layerStore from './layers'
 
 const ZOOM_RATE = 1.1
 
@@ -16,21 +17,30 @@ export const viewSize = canvas.viewSize
 export const viewBox = canvas.viewBox
 
 const mode = writable<CanvasMode | undefined>()
-setMode('hand')
+
+function createLayerContext(): LayerContext {
+  return {
+    addElement: layerStore.addElement,
+    removeElement: layerStore.removeElement,
+    selectElement: layerStore.selectElement,
+    clearSelectedElement: layerStore.clearSelectedElement,
+  }
+}
 
 export function setMode(name: string): void {
-  const next = createCanvasMode(name, canvas)
+  const next = createCanvasMode(name, canvas, createLayerContext())
   mode.update((old) => {
     old?.onEnd()
     next.onBegin()
     return next
   })
 }
+setMode('hand')
 
-export function onDown(p: IVec2, options?: { ctrl: boolean }): void {
+export function onDown(p: IVec2, options?: PointerOption): void {
   get(mode)?.onDown(canvas.toCanvasPosition(p), options)
 }
-export function onMove(p: IVec2, v: IVec2, options?: { ctrl: boolean }): void {
+export function onMove(p: IVec2, v: IVec2, options?: PointerOption): void {
   get(mode)?.onMove(
     canvas.toCanvasPosition(p),
     canvas.toCanvasVector(v),
@@ -40,10 +50,6 @@ export function onMove(p: IVec2, v: IVec2, options?: { ctrl: boolean }): void {
 export function onUp(): void {
   get(mode)?.onUp()
 }
-export function onWheel(
-  p: IVec2,
-  delta: IVec2,
-  options?: { ctrl: boolean }
-): void {
+export function onWheel(p: IVec2, delta: IVec2, options?: PointerOption): void {
   get(mode)?.onWheel(canvas.toCanvasPosition(p), delta, options)
 }

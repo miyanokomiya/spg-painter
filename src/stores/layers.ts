@@ -43,6 +43,7 @@ const ACTION_NAMES = {
   ADD_LAYER: 'ADD_LAYER',
   ADD_ELEMENT: 'ADD_ELEMENT',
   SELECT_ELEMENT: 'SELECT_ELEMENT',
+  CLEAR_SELECTED_ELEMENTS: 'CLEAR_SELECTED_ELEMENTS',
 }
 
 defineReducer(ACTION_NAMES.ADD_LAYER, {
@@ -109,12 +110,29 @@ defineReducer(ACTION_NAMES.SELECT_ELEMENT, {
   undo: (snapshot) => {
     elementSelectable.multiSelect(Object.keys(snapshot))
   },
-  redo: (args: { id: string; options?: { shift?: boolean } }) => {
+  redo: (args: { id: string; options?: { ctrl?: boolean } }) => {
     const snapshot = get(elementSelectable.selectedIds)
-    elementSelectable.select(args.id, args.options?.shift)
+    elementSelectable.select(args.id, args.options?.ctrl)
     return snapshot
   },
   getLabel: () => 'Select Element',
+  ignoreDuplication: true,
+  checkDuplicationFn: (a, b) => {
+    return !a.options?.ctrl && !b.options?.ctrl && a.id === b.id
+  },
+})
+
+defineReducer(ACTION_NAMES.CLEAR_SELECTED_ELEMENTS, {
+  undo: (snapshot) => {
+    elementSelectable.multiSelect(Object.keys(snapshot))
+  },
+  redo: () => {
+    const snapshot = get(elementSelectable.selectedIds)
+    elementSelectable.clearAll()
+    return snapshot
+  },
+  getLabel: () => 'Clear Selected',
+  ignoreDuplication: true,
 })
 
 export function addLayer(): void {
@@ -124,10 +142,17 @@ export function addLayer(): void {
   })
 }
 
-export function selectElement(id: string, options?: { shift?: boolean }): void {
+export function selectElement(id: string, options?: { ctrl?: boolean }): void {
   dispatch({
     name: ACTION_NAMES.SELECT_ELEMENT,
     args: { id, options },
+  })
+}
+
+export function clearSelectedElement(): void {
+  dispatch({
+    name: ACTION_NAMES.CLEAR_SELECTED_ELEMENTS,
+    args: undefined,
   })
 }
 
@@ -146,4 +171,9 @@ export function addElement(
   })
 
   return elm.id
+}
+
+export function removeElement(id: string): void {
+  // TODO
+  console.log('remove', id)
 }

@@ -40,7 +40,6 @@
   }
 
   function onSelectElement(e: CustomEvent<string>) {
-    console.log(e.detail)
     selectElement(e.detail)
   }
 </script>
