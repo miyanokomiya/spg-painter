@@ -4,7 +4,7 @@ import type { StoreEntities, ElementBase } from '../models/entities'
 import { createLayer, createId } from '../models/entities'
 import { useSelectable } from './utils'
 import type { IdMap } from '../utils/items'
-import { extractObject, mapObject } from '../utils/items'
+import { extractObject, mapValues } from '../utils/items'
 import { defineReducer, dispatch } from './history'
 import {
   addEntity,
@@ -48,7 +48,7 @@ export const selectedElementIds = elementSelectable.selectedIds
 
 export function getSelectedElements(): IdMap<ElementBase> {
   const byId = get(elements).byId
-  return mapObject(get(selectedElementIds), (_, id) => byId[id])
+  return mapValues(get(selectedElementIds), (_, id) => byId[id])
 }
 
 const ACTION_NAMES = {

@@ -9,10 +9,10 @@ describe('src/utils/items.ts', () => {
     })
   })
 
-  describe('mapObject', () => {
+  describe('mapValues', () => {
     it('should return transformed object by calling mapping funciton', () => {
       const src = { a: 1, b: 2 }
-      expect(target.mapObject(src, (v) => v + 10)).toEqual({
+      expect(target.mapValues(src, (v) => v + 10)).toEqual({
         a: 11,
         b: 12,
       })

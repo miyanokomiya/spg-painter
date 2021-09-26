@@ -14,7 +14,7 @@ export function extractObject<T>(
   }, {})
 }
 
-export function mapObject<T, K>(
+export function mapValues<T, K>(
   src: IdMap<T>,
   fn: (item: T, id: string) => K
 ): IdMap<K> {

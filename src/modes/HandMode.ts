@@ -8,7 +8,7 @@ import type {
   PointerOption,
 } from './core'
 import { CANVAS_ANCHOR_TYPE } from '../utils/canvas'
-import { mapObject } from '../utils/items'
+import { mapValues } from '../utils/items'
 import { translateElement } from '../models/elements'
 
 export class HandMode implements CanvasMode {
@@ -45,7 +45,7 @@ export class HandMode implements CanvasMode {
           break
         case CANVAS_ANCHOR_TYPE.ANCHOR_TRANSLATE:
           this.layerContext.updateElements(
-            mapObject(this.layerContext.getSelectedElements(), (elm) =>
+            mapValues(this.layerContext.getSelectedElements(), (elm) =>
               translateElement(elm, v)
             ),
             `translate_${this.downTimestamp}`
