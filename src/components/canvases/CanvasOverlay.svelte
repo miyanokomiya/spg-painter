@@ -17,21 +17,23 @@
   function onPointerDown(e: PointerEvent) {
     onDown(getPointInTarget(e), {
       anchor: getAnchor(e.target as HTMLElement),
+      ctrl: e.ctrlKey,
     })
   }
   function onPointerMove(e: PointerEvent) {
     const p = getPointInTarget(e)
-    onMove(p, sub(p, moveAt))
+    onMove(p, sub(p, moveAt), { ctrl: e.ctrlKey })
     moveAt = p
   }
-  function onPointerUp() {
-    onUp()
+  function onPointerUp(e: PointerEvent) {
+    onUp({ ctrl: e.ctrlKey })
   }
   function onPointerWheel(e: WheelEvent) {
-    onWheel(getPointInTarget(e), {
-      x: e.deltaX,
-      y: e.deltaY,
-    })
+    onWheel(
+      getPointInTarget(e),
+      { x: e.deltaX, y: e.deltaY },
+      { ctrl: e.ctrlKey }
+    )
   }
 </script>
 

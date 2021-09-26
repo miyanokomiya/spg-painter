@@ -51,8 +51,8 @@ export function onMove(p: IVec2, v: IVec2, options?: PointerOption): void {
     options
   )
 }
-export function onUp(): void {
-  get(mode)?.onUp()
+export function onUp(options?: PointerOption): void {
+  get(mode)?.onUp(options)
 }
 export function onWheel(p: IVec2, delta: IVec2, options?: PointerOption): void {
   get(mode)?.onWheel(canvas.toCanvasPosition(p), delta, options)

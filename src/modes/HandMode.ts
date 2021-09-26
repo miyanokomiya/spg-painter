@@ -58,7 +58,7 @@ export class HandMode implements CanvasMode {
     this.moveAt = p
   }
 
-  onUp(): void {
+  onUp(options?: PointerOption): void {
     switch (this.anchor?.type) {
       case CANVAS_ANCHOR_TYPE.CANVAS:
         if (!this.isDragged) {
@@ -67,7 +67,16 @@ export class HandMode implements CanvasMode {
         break
       case CANVAS_ANCHOR_TYPE.ANCHOR_SELECT:
         if (!this.isDragged) {
-          this.layerContext.selectElement(this.anchor.id)
+          this.layerContext.selectElement(this.anchor.id, {
+            ctrl: options?.ctrl,
+          })
+        }
+        break
+      case CANVAS_ANCHOR_TYPE.ANCHOR_TRANSLATE:
+        if (!this.isDragged) {
+          this.layerContext.selectElement(this.anchor.id, {
+            ctrl: options?.ctrl,
+          })
         }
         break
     }

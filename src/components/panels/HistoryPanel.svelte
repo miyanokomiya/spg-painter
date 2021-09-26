@@ -5,7 +5,7 @@
 <div class="wrapper">
   <div class="list">
     {#each $summaries as summary}
-      <div class="item" class:done={summary.done}>
+      <div class="item" class:done={summary.done} title={summary.label}>
         {summary.label}
       </div>
     {/each}
@@ -24,6 +24,10 @@
   .item {
     padding: 4px 0;
     color: #aaa;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    font-size: 12px;
   }
   .item + .item {
     border-bottom: solid 1px #aaa;

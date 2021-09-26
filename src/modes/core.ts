@@ -21,7 +21,7 @@ export interface CanvasMode {
   onEnd(): void
   onDown(p: IVec2, options?: PointerOption): void
   onMove(p: IVec2, v: IVec2, options?: PointerOption): void
-  onUp(): void
+  onUp(options?: PointerOption): void
   onWheel(p: IVec2, delta: IVec2, options?: PointerOption): void
 }
 

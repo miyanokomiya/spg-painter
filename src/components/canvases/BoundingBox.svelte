@@ -1,8 +1,9 @@
 <script lang="ts">
   import { getContext } from 'svelte'
   import type { Readable } from 'svelte/store'
-  import { CANVAS_ANCHOR_TYPE } from '../../utils/canvas';
+  import { CANVAS_ANCHOR_TYPE, createAnchor } from '../../utils/canvas'
 
+  export let id = ''
   export let x = 0
   export let y = 0
   export let width = 0
@@ -24,7 +25,7 @@
     stroke-dasharray={`${$scale * 4} ${$scale * 4}`}
   />
   <ellipse
-    data-anchor-type={CANVAS_ANCHOR_TYPE.ANCHOR_TRANSLATE}
+    {...createAnchor(CANVAS_ANCHOR_TYPE.ANCHOR_TRANSLATE, id)}
     cx={width / 2}
     cy={height / 2}
     rx={8 * $scale}

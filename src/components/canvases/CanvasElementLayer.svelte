@@ -23,10 +23,7 @@
 <g>
   {#each elementInfos as info}
     <g>
-      <g
-        {...createAnchor(CANVAS_ANCHOR_TYPE.ANCHOR_SELECT, info.elm.id)}
-        class="pointer-anchor"
-      >
+      <g {...createAnchor(CANVAS_ANCHOR_TYPE.ANCHOR_SELECT, info.elm.id)}>
         <ElementAnchor
           x={info.anchor.x}
           y={info.anchor.y}
@@ -34,7 +31,7 @@
         />
       </g>
       {#if selectedElementIds[info.elm.id]}
-        <BoundingBox {...getBoundBox(info.elm)} />
+        <BoundingBox id={info.elm.id} {...getBoundBox(info.elm)} />
       {/if}
     </g>
   {/each}

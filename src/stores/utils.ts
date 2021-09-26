@@ -10,8 +10,8 @@ export function useSelectable<T>(entities: Readable<StoreEntityBase<T>>): {
   selectedList: Readable<T[]>
   lastSelectedId: Readable<string | undefined>
   lastSelected: Readable<T | undefined>
-  select: (id: string, shift?: boolean) => void
-  multiSelect: (ids: string[], shift?: boolean) => void
+  select: (id: string, ctrl?: boolean) => void
+  multiSelect: (ids: string[], ctrl?: boolean) => void
   selectAll: () => void
   clearAll: () => void
 } {

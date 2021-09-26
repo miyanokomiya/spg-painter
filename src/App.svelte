@@ -90,7 +90,8 @@
     right: 0;
     bottom: 0;
     max-height: 100%;
+    width: 120px;
     overflow: auto;
-    opacity: 0.6;
+    opacity: 0.5;
   }
 </style>
