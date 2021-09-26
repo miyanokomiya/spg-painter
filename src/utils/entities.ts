@@ -1,5 +1,5 @@
 import type { StoreEntityBase } from '../models/entities'
-import { extract } from './items'
+import { extractObject } from './items'
 
 export function addEntity<T>(
   src: StoreEntityBase<T>,
@@ -26,12 +26,22 @@ export function updateEntity<T>(
   }
 }
 
+export function updateEntities<T>(
+  src: StoreEntityBase<T>,
+  entitiesById: { [id: string]: T }
+): StoreEntityBase<T> {
+  return {
+    byId: { ...src.byId, ...entitiesById },
+    allIds: src.allIds,
+  }
+}
+
 export function removeEntity<T>(
   src: StoreEntityBase<T>,
   id: string
 ): StoreEntityBase<T> {
   return {
-    byId: extract(src.byId, (_, key) => key !== id),
+    byId: extractObject(src.byId, (_, key) => key !== id),
     allIds: src.allIds.filter((key) => key !== id),
   }
 }

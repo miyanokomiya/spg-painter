@@ -3,6 +3,7 @@ import { useModuleMap } from '../composables/moduleMap'
 import type { ElementBase } from '../models/entities'
 import type { CanvasModule } from '../stores/utils'
 import type { CANVAS_ANCHOR_TYPE_KEY } from '../utils/canvas'
+import type { IdMap } from '../utils/items'
 
 export type PointerAnchor = { type: CANVAS_ANCHOR_TYPE_KEY; id: string }
 
@@ -36,7 +37,9 @@ export interface LayerContext {
     arg?: Partial<ElementBase>,
     getId?: () => string
   ): void
+  updateElements(elementsById: IdMap<ElementBase>, seriesKey?: string): void
   removeElement(id: string): void
   selectElement(id: string, options?: { ctrl?: boolean }): void
   clearSelectedElement(): void
+  getSelectedElements(): IdMap<ElementBase>
 }

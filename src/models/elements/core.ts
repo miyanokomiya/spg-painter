@@ -2,11 +2,20 @@ import type { IVec2 } from 'okageo'
 import { useModuleMap } from '../../composables/moduleMap'
 import type { ElementBase } from '../entities'
 
+export interface ElementBoundingBox {
+  x: number
+  y: number
+  width: number
+  height: number
+  radian: number
+}
+
 export interface ElementModule<T extends ElementBase> {
   name: string
   create(arg?: Partial<T>, getId?: () => string): T
   translate(target: T, vec: IVec2): T
   getAnchor(target: T): IVec2
+  getBoundBox(target: T): ElementBoundingBox
 }
 
 export function createElementBase(

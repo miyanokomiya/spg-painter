@@ -2,12 +2,15 @@
   import { sub } from 'okageo'
 
   import { getPointInTarget } from 'okanvas'
-  import { onDown, onMove, onUp, onWheel } from '../../stores/canvas'
+  import { setContext } from 'svelte'
+  import { scale, onDown, onMove, onUp, onWheel } from '../../stores/canvas'
   import { CANVAS_ANCHOR_TYPE, getAnchor } from '../../utils/canvas'
 
   export let viewBox = '0 0 100 100'
   export let width = 0
   export let height = 0
+
+  setContext('scale', scale)
 
   let moveAt = { x: 0, y: 0 }
 

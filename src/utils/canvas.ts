@@ -2,6 +2,7 @@ import type { PointerAnchor } from '../modes/core'
 
 export const CANVAS_ANCHOR_TYPE = {
   CANVAS: 'CANVAS',
+  ANCHOR_TRANSLATE: 'ANCHOR_TRANSLATE',
 } as const
 export type CANVAS_ANCHOR_TYPE_KEY = keyof typeof CANVAS_ANCHOR_TYPE
 

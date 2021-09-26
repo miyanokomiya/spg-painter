@@ -3,8 +3,15 @@ import { createElement } from '../models/elements/index'
 import type { StoreEntities, ElementBase } from '../models/entities'
 import { createLayer, createId } from '../models/entities'
 import { useSelectable } from './utils'
+import type { IdMap } from '../utils/items'
+import { extractObject, mapObject } from '../utils/items'
 import { defineReducer, dispatch } from './history'
-import { addEntity, removeEntity, updateEntity } from '../utils/entities'
+import {
+  addEntity,
+  removeEntity,
+  updateEntities,
+  updateEntity,
+} from '../utils/entities'
 
 const layers = writable<StoreEntities['layers']>({
   byId: {},
@@ -39,9 +46,15 @@ const elementSelectable = useSelectable(elements)
 export const lastSelectedElementId = elementSelectable.lastSelectedId
 export const selectedElementIds = elementSelectable.selectedIds
 
+export function getSelectedElements(): IdMap<ElementBase> {
+  const byId = get(elements).byId
+  return mapObject(get(selectedElementIds), (_, id) => byId[id])
+}
+
 const ACTION_NAMES = {
   ADD_LAYER: 'ADD_LAYER',
   ADD_ELEMENT: 'ADD_ELEMENT',
+  UPDATE_ELEMENTS: 'UPDATE_ELEMENTS',
   SELECT_ELEMENT: 'SELECT_ELEMENT',
   CLEAR_SELECTED_ELEMENTS: 'CLEAR_SELECTED_ELEMENTS',
 }
@@ -104,6 +117,32 @@ defineReducer(ACTION_NAMES.ADD_ELEMENT, {
     return { layerId: targetLayer.id, elementId: elm.id, selectedIds }
   },
   getLabel: () => 'Add Element',
+})
+
+defineReducer(ACTION_NAMES.UPDATE_ELEMENTS, {
+  undo: (args) => {
+    if (!args) return
+
+    elements.update((old) => {
+      return updateEntities(old, args.snapshot)
+    })
+  },
+  redo: (args: { elementsById: IdMap<ElementBase> }) => {
+    const targetLayer = get(lastSelectedLayer)
+    if (!targetLayer) return
+
+    const snapshot = extractObject(
+      get(elements).byId,
+      (elm) => !!args.elementsById[elm.id]
+    )
+
+    elements.update((old) => {
+      return updateEntities(old, args.elementsById)
+    })
+
+    return { snapshot }
+  },
+  getLabel: () => 'Update Element',
 })
 
 defineReducer(ACTION_NAMES.SELECT_ELEMENT, {
@@ -171,6 +210,20 @@ export function addElement(
   })
 
   return elm.id
+}
+
+export function updateElements(
+  elementsById: IdMap<ElementBase>,
+  seriesKey?: string
+): void {
+  const layer = get(lastSelectedLayer)
+  if (!layer) return
+
+  dispatch({
+    name: ACTION_NAMES.UPDATE_ELEMENTS,
+    args: { elementsById },
+    seriesKey,
+  })
 }
 
 export function removeElement(id: string): void {

@@ -1,6 +1,6 @@
 import type { IVec2 } from 'okageo'
 import type { ElementBase } from '../entities'
-import type { ElementModule } from './core'
+import type { ElementBoundingBox, ElementModule } from './core'
 import { createElementBase } from './core'
 
 const name = 'rect'
@@ -10,6 +10,7 @@ export interface ElementRect extends ElementBase {
   y: number
   width: number
   height: number
+  radian: number
 }
 
 function create(arg?: Partial<ElementRect>, getId?: () => string): ElementRect {
@@ -18,6 +19,7 @@ function create(arg?: Partial<ElementRect>, getId?: () => string): ElementRect {
     y: 0,
     width: 10,
     height: 10,
+    radian: 0,
     ...createElementBase(arg, getId),
     name,
   }
@@ -38,11 +40,22 @@ function getAnchor(target: ElementRect): IVec2 {
   }
 }
 
+function getBoundBox(target: ElementRect): ElementBoundingBox {
+  return {
+    x: target.x,
+    y: target.y,
+    width: target.width,
+    height: target.height,
+    radian: target.radian,
+  }
+}
+
 const moduleImpl: ElementModule<ElementRect> = {
   name,
   create,
   translate,
   getAnchor,
+  getBoundBox,
 }
 
 export default moduleImpl

@@ -1,3 +1,4 @@
+import type { Readable } from 'svelte/store'
 import { get, writable } from 'svelte/store'
 import type { IVec2 } from 'okageo'
 import { useCanvas } from './utils'
@@ -15,15 +16,18 @@ const canvas = useCanvas({
 
 export const viewSize = canvas.viewSize
 export const viewBox = canvas.viewBox
+export const scale: Readable<number> = canvas.scale
 
 const mode = writable<CanvasMode | undefined>()
 
 function createLayerContext(): LayerContext {
   return {
     addElement: layerStore.addElement,
+    updateElements: layerStore.updateElements,
     removeElement: layerStore.removeElement,
     selectElement: layerStore.selectElement,
     clearSelectedElement: layerStore.clearSelectedElement,
+    getSelectedElements: layerStore.getSelectedElements,
   }
 }
 

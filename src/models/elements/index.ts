@@ -1,5 +1,6 @@
 import type { IVec2 } from 'okageo'
 import type { ElementBase } from '../entities'
+import type { ElementBoundingBox } from './core'
 import { elementModuleMap } from './core'
 
 import rectModule from './rect'
@@ -19,4 +20,8 @@ export function translateElement(target: ElementBase, vec: IVec2): ElementBase {
 
 export function getElementAnchor(target: ElementBase): IVec2 {
   return elementModuleMap.getModule(target.name).getAnchor(target)
+}
+
+export function getElementBoundBox(target: ElementBase): ElementBoundingBox {
+  return elementModuleMap.getModule(target.name).getBoundBox(target)
 }

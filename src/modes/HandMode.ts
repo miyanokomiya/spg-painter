@@ -8,6 +8,8 @@ import type {
   PointerOption,
 } from './core'
 import { CANVAS_ANCHOR_TYPE } from '../utils/canvas'
+import { mapObject } from '../utils/items'
+import { translateElement } from '../models/elements'
 
 export class HandMode implements CanvasMode {
   name = 'hand'
@@ -17,6 +19,7 @@ export class HandMode implements CanvasMode {
   downAt: IVec2 | undefined
   moveAt: IVec2 | undefined
   dragAmount = 0
+  downTimestamp = 0
 
   constructor(canvas: CanvasModule, layerContext: LayerContext) {
     this.canvas = canvas
@@ -30,12 +33,26 @@ export class HandMode implements CanvasMode {
     this.anchor = options?.anchor
     this.downAt = p
     this.moveAt = p
+    this.downTimestamp = Date.now()
+    console.log('anchor', this.anchor)
   }
 
   onMove(p: IVec2, v: IVec2, _options?: PointerOption): void {
     if (this.downAt && this.moveAt) {
-      this.canvas.origin.update((old) => sub(old, v))
-      this.dragAmount = this.dragAmount + getNorm(v)
+      switch (this.anchor?.type) {
+        case CANVAS_ANCHOR_TYPE.CANVAS:
+          this.canvas.origin.update((old) => sub(old, v))
+          this.dragAmount = this.dragAmount + getNorm(v)
+          break
+        case CANVAS_ANCHOR_TYPE.ANCHOR_TRANSLATE:
+          this.layerContext.updateElements(
+            mapObject(this.layerContext.getSelectedElements(), (elm) =>
+              translateElement(elm, v)
+            ),
+            `translate_${this.downTimestamp}`
+          )
+          break
+      }
     }
     this.moveAt = p
   }
