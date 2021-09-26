@@ -5,7 +5,11 @@
 
   function onClickRect() {
     console.log('add rect')
-    addElement('rect', {}, () => `rect_${Math.random()}`)
+    addElement(
+      'rect',
+      {},
+      () => `rect_${Math.random()}`
+    )
   }
 </script>
 

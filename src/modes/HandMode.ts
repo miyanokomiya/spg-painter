@@ -30,11 +30,11 @@ export class HandMode implements CanvasMode {
   onEnd(): void {}
 
   onDown(p: IVec2, options?: PointerOption): void {
+    console.log('anchor', options?.anchor)
     this.anchor = options?.anchor
     this.downAt = p
     this.moveAt = p
     this.downTimestamp = Date.now()
-    console.log('anchor', this.anchor)
   }
 
   onMove(p: IVec2, v: IVec2, _options?: PointerOption): void {
@@ -42,7 +42,6 @@ export class HandMode implements CanvasMode {
       switch (this.anchor?.type) {
         case CANVAS_ANCHOR_TYPE.CANVAS:
           this.canvas.origin.update((old) => sub(old, v))
-          this.dragAmount = this.dragAmount + getNorm(v)
           break
         case CANVAS_ANCHOR_TYPE.ANCHOR_TRANSLATE:
           this.layerContext.updateElements(
@@ -53,14 +52,26 @@ export class HandMode implements CanvasMode {
           )
           break
       }
+
+      this.dragAmount = this.dragAmount + getNorm(v)
     }
     this.moveAt = p
   }
 
   onUp(): void {
-    if (this.anchor?.type === CANVAS_ANCHOR_TYPE.CANVAS && !this.isDragged()) {
-      this.layerContext.clearSelectedElement()
+    switch (this.anchor?.type) {
+      case CANVAS_ANCHOR_TYPE.CANVAS:
+        if (!this.isDragged) {
+          this.layerContext.clearSelectedElement()
+        }
+        break
+      case CANVAS_ANCHOR_TYPE.ANCHOR_SELECT:
+        if (!this.isDragged) {
+          this.layerContext.selectElement(this.anchor.id)
+        }
+        break
     }
+
     this.anchor = undefined
     this.downAt = undefined
     this.moveAt = undefined
@@ -72,7 +83,7 @@ export class HandMode implements CanvasMode {
     canvas.zoom(p, delta.y < 0 ? 1 / canvas.ZOOM_RATE : canvas.ZOOM_RATE)
   }
 
-  private isDragged(): boolean {
+  private get isDragged() {
     return this.dragAmount > 1
   }
 }

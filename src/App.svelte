@@ -9,7 +9,6 @@
   import {
     lastSelectedLayerElements,
     init,
-    selectElement,
     selectedElementIds,
   } from './stores/layers'
   import { undo, redo } from './stores/history'
@@ -38,10 +37,6 @@
         return
     }
   }
-
-  function onSelectElement(e: CustomEvent<string>) {
-    selectElement(e.detail)
-  }
 </script>
 
 <svelte:window on:keydown={handleKeydown} />
@@ -64,7 +59,6 @@
           <CanvasElementLayer
             elements={$lastSelectedLayerElements}
             selectedElementIds={$selectedElementIds}
-            on:selectElement={onSelectElement}
           />
         </CanvasOverlay>
       </div>

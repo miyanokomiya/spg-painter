@@ -17,8 +17,8 @@ function create(arg?: Partial<ElementRect>, getId?: () => string): ElementRect {
   return {
     x: 0,
     y: 0,
-    width: 10,
-    height: 10,
+    width: 150,
+    height: 100,
     radian: 0,
     ...createElementBase(arg, getId),
     name,

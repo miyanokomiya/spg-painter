@@ -5,6 +5,7 @@
   import ElementAnchor from './ElementAnchor.svelte'
   import BoundingBox from './BoundingBox.svelte'
   import type { ElementBoundingBox } from '../../models/elements/core'
+  import { CANVAS_ANCHOR_TYPE, createAnchor } from '../../utils/canvas'
 
   export let elements: ElementBase[] = []
   export let selectedElementIds: { [id: string]: true } = {}
@@ -14,12 +15,6 @@
     anchor: getElementAnchor(elm),
   }))
 
-  const dispatch = createEventDispatcher()
-
-  function selectElement(id: string): void {
-    dispatch('selectElement', id)
-  }
-
   function getBoundBox(elm: ElementBase): ElementBoundingBox {
     return getElementBoundBox(elm)
   }
@@ -27,12 +22,17 @@
 
 <g>
   {#each elementInfos as info}
-    <g on:click={() => selectElement(info.elm.id)}>
-      <ElementAnchor
-        x={info.anchor.x}
-        y={info.anchor.y}
-        selected={selectedElementIds[info.elm.id]}
-      />
+    <g>
+      <g
+        {...createAnchor(CANVAS_ANCHOR_TYPE.ANCHOR_SELECT, info.elm.id)}
+        class="pointer-anchor"
+      >
+        <ElementAnchor
+          x={info.anchor.x}
+          y={info.anchor.y}
+          selected={selectedElementIds[info.elm.id]}
+        />
+      </g>
       {#if selectedElementIds[info.elm.id]}
         <BoundingBox {...getBoundBox(info.elm)} />
       {/if}

@@ -195,9 +195,9 @@ export function clearSelectedElement(): void {
   })
 }
 
-export function addElement(
+export function addElement<T extends ElementBase>(
   name: string,
-  arg?: Partial<ElementBase>,
+  arg?: Partial<T>,
   getId?: () => string
 ): string | undefined {
   const layer = get(lastSelectedLayer)
